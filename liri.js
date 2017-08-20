@@ -6,11 +6,14 @@ var extend = require('util')._extend;
 var request = require('request');
 var Spotify = require('node-spotify-api');
 var omdbKey = '40e9cece';
+var fs = require('fs');
+var csvParse = require('csv-parse');
 
-var command = process.argv[2];
-var args    = process.argv.slice(3);
+if (process.argv.length > 2) {
+  processCommand(process.argv[2],process.argv.slice(3));
+}
 
-if (command) {
+function processCommand(command,args) {
   switch (command) {
   case 'my-tweets':
     myTweets();
@@ -19,7 +22,10 @@ if (command) {
     spotifyThisSong.apply(this, args);
     break;
   case 'movie-this':
-    spotifyThisSong.apply(this, args);
+    movieThis.apply(this, args);
+    break;
+  case 'do-what-it-says':
+    doWhatItSays.apply(this, args);
     break;
   }
 }
@@ -40,6 +46,7 @@ function myTweets() {
 }
 
 function spotifyThisSong(title) {
+  console.log(JSON.stringify(spotifyKeys,null,2));
   var spotify = new Spotify(
     spotifyKeys);
 
@@ -91,7 +98,6 @@ function base64Encode(s) {
   return new Buffer(s).toString('base64');
 }
 
-
 function movieThis(movieTitle) {
   var movieUrl =  "http://www.omdbapi.com/?apikey="
         + omdbKey
@@ -110,4 +116,22 @@ function movieThis(movieTitle) {
     }
     console.log("body: " + JSON.stringify(JSON.parse(body), null, 2));
   });
+}
+
+function doWhatItSays(commandFileParam) {
+  var commandFilePath = commandFileParam || './random.txt';
+  var commandFileContents = fs.readFileSync(commandFilePath);
+  console.log("contents: " + commandFileContents);
+  csvParse(commandFileContents,(err,commandLines) =>
+           {
+             console.log(JSON.stringify(commandLines,null,2));
+             console.log("cl: " + commandLines);
+             commandLines.forEach(
+               (commandLine) => {
+                 console.log('commandLine: ' + commandLine);
+                 processCommand(commandLine[0],commandLine.slice(1));
+
+               });
+           });
+
 }
