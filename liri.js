@@ -181,16 +181,10 @@ function movieThis(movieTitle) {
 function doWhatItSays(commandFileParam) {
     var commandFilePath = commandFileParam || './random.txt';
     var commandFileContents = fs.readFileSync(commandFilePath);
-    console.log("contents: " + commandFileContents);
     csvParse(commandFileContents, (err, commandLines) => {
-        console.log(JSON.stringify(commandLines, null, 2));
-        console.log("cl: " + commandLines);
         commandLines.forEach(
             (commandLine) => {
-                console.log('commandLine: ' + commandLine);
                 processCommand(commandLine[0], commandLine.slice(1));
-
             });
     });
-
 }
