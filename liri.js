@@ -79,7 +79,8 @@ var songTemplate = songTemplateLines.join("\n");
 
 function spotifyThisSong(title) {
 
-    title = title || 'The Sign';
+    title = title || 'The Sign Ace of Base';
+
     var spotify = new Spotify(
         spotifyKeys);
 
